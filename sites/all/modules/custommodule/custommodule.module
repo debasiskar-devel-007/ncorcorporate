@@ -1,0 +1,366 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: KTA30
+ * Date: 11/8/14
+ * Time: 1:05 PM
+ */
+
+
+
+function custommodule_init(){
+
+	
+}
+
+function custommodule_permission() {
+   /* return array(
+        'custommodule verification' => array(
+            'title' => t('Check User Status'),
+            'description' => t('Perform view for my module.'),
+        ),
+        'custommodule updatestatus' => array(
+            'title' => t('Update User Status'),
+            'description' => t('Perform view for my module.'),
+        ),
+
+
+
+
+        'custommodule updatestatus1' => array(
+            'title' => t('Update User Status'),
+            'description' => t('Perform view for my module.'),
+        ),
+        'custommodule create_social_post' => array(
+            'title' => t('FB Post'),
+            'description' => t('Create a social post.'),
+        ),
+        'custommodule get_social_post' => array(
+            'title' => t('FB Post'),
+            'description' => t('Get a social post Info.'),
+        ),
+        'custommodule get_all_fb_like' => array(
+            'title' => t('FB Post'),
+            'description' => t('Get a all fb like'),
+        ),
+        'custommodule get_all_fb_group' => array(
+            'title' => t('FB Post'),
+            'description' => t('Get a all fb group'),
+        ),
+        'custommodule get_fb_pagination' => array(
+            'title' => t('FB Post'),
+            'description' => t('Get a fb pagination'),
+        ),
+        'custommodule add_fb_page' => array(
+            'title' => t('FB Post'),
+            'description' => t('Get a add fb page'),
+        ),
+        'custommodule custom_node_delete' => array(
+            'title' => t('Node'),
+            'description' => t('custom node delete'),
+        ),
+        'custommodule delete_twitter_acc' => array(
+            'title' => t('twitter'),
+            'description' => t('twitter account delete'),
+        ),
+        'custommodule delete_linkedin_acc' => array(
+            'title' => t('linkedin'),
+            'description' => t('linkedin account delete'),
+        ),
+        'custommodule get_linkedin_profile' => array(
+            'title' => t('linked'),
+            'description' => t('get linkedin profile'),
+        ),
+        'custommodule config' => array(
+            'title' => t('Admin Activity'),
+            'description' => t('Perform config for my module.'),
+        ),
+
+
+
+        'custommodule fetchncor' => array(
+        'title' => t('custom fetchncor'),
+        'description' => t('Auto Login.'),
+    ),
+    );*/
+}
+
+
+
+
+
+
+
+/*function custommodule_preprocess_field(&$vars) {
+  if ($vars['element']['#field_name'] == 'field_media_file') {
+	$vars['items'][0] = array(
+		'#markup' => '<img src="'.$vars["element"][0]["#markup"].'" width=300 />',
+	); 
+  }
+}*/
+
+function custommodule_preprocess_node(&$variables) {
+    $node = $variables['node'];
+	
+	
+	global $user;
+	
+	if (  $variables['node']->type == 'dynamic_content') {
+        $variables['title'] = FALSE;
+        $variables['content']['links'] = FALSE;
+    }
+	
+	if (  $variables['node']->type == 'post') {
+		echo  "<h2>".$variables['title']."</h2>";
+	}	
+	if (  $variables['node']->nid == 2 || $variables['node']->nid == 1 ) {
+        if(!$user->uid){
+			header('Location: '.$GLOBALS['base_url'].'/user/login');	
+		}
+
+    }
+}
+
+
+
+function custommodule_form_alter(&$form, &$form_state, $form_id) {
+
+    if ($form_id == 'user_login') {
+       // $form['name']['#attributes']['placeholder'] = t( 'Username' );
+        //$form['name']['#description'] = t('');
+        //$form['pass']['#description'] = t('');
+        //$form['pass']['#attributes']['placeholder'] = t( 'Password' );
+        $form['#prefix'] = '<div class="login-page"><h2>Log in</h2>';
+        $form['#suffix'] = '<span class="sign-up-text">Forgot Your Password? <a href="'.$GLOBALS['base_url'].'/user/password"> Click Here</a></span></div>';
+    
+	
+	
+	}
+    if ($form_id == 'user_pass') {
+        //$form['#prefix'] = '<div class="fpassword-page"><h2> <span>Forgot</span> Password</h2>';
+        //$form['#suffix'] = '<span class="sign-up-text"><a href="'.$GLOBALS['base_url'].'/user/login"> Log In</a></span></div>';
+
+        $form['#prefix'] = '<div class="login-page1"><h2>Forgot Password</h2>';
+        $form['#suffix'] = '<span class="sign-up-text">Forgot Your Password? <a href="'.$GLOBALS['base_url'].'/user/password"> Click Here</a></span></div>';
+
+
+    }
+	if ($form_id == 'user_register_form') {
+        //$form['account']['name']['#attributes']['placeholder'] = t( 'Desired Username' );
+		//$form['account']['name']['#description'] = t('');
+        //$form['account']['mail']['#attributes']['placeholder'] = t( 'E-mail' );
+		//$form['account']['mail']['#description'] = t('');
+        //$form['#prefix'] = '<div class="registration-page"><h2> <span>Sign</span> up </h2>';
+        //$form['#suffix'] = '<span class="sign-up-text">Already Have An Account?<a href="'.$GLOBALS['base_url'].'/user/login"> Login</a></span></div>';
+	}
+    if($form_id=='jobs_node_form'){
+
+        $x=arg();
+        if($x[2]=='edit'){
+            $form['#prefix']='<h2>Edit Job</h2>';
+            $form['#suffix']='';
+            $form['actions']['submit']['#submit'][] = 'Job_Submit';
+        }
+        else{
+
+            $form['#prefix']='<h2>Add Job</h2>';
+            $form['#suffix']='';
+            $form['actions']['submit']['#submit'][] = 'Job_Submit';
+
+        }
+
+    }
+
+    if($form_id=='banner_image_node_form'){
+
+        $x=arg();
+        if($x[2]=='edit'){
+        $form['#prefix']='<h2>Edit Banner Image</h2>';
+        $form['#suffix']='';
+        $form['actions']['submit']['#submit'][] = 'Banner_Submit';
+        }
+        else{
+
+            $form['#prefix']='<h2>Add Banner Image</h2>';
+            $form['#suffix']='';
+            $form['actions']['submit']['#submit'][] = 'Banner_Submit';
+
+        }
+    }
+	
+	if($form_id == 'post_node_form'){
+	
+		$x=arg();
+		if($x[2]=='edit'){
+            $form['#prefix'] = '<h2> Edit Post </h2>';
+			$form['actions']['submit']['#submit'][] = 'MYMODULE_submit_post1';
+		}else{
+			$form['#prefix'] = '<h2> Add Post </h2>';
+			$form['actions']['submit']['#submit'][] = 'MYMODULE_submit_post';
+		}	
+		
+		
+        
+    
+		
+	}
+
+    if($form_id=='product_banner_node_form'){
+
+
+        $x=arg();
+        if($x[2]=='edit'){
+            $form['#prefix'] = '<h2> Edit Product Banner </h2>';
+            $form['actions']['submit']['#submit'][] = 'Productbanner_submit';
+        }else{
+            $form['#prefix'] = '<h2> Add Product Bamnner </h2>';
+            $form['actions']['submit']['#submit'][] = 'Productbanner_submit';
+        }
+
+
+    }
+
+    if($form_id=='our_product_section_video_node_form'){
+        $x=arg();
+        if($x[2]=='edit'){
+        $form['#prefix']='<h2>Edit Video</h2>';
+        $form['#suffix']='';
+        $form['actions']['submit']['#submit'][] = 'Video_Submit';
+        }
+        else{
+
+            $form['#prefix']='<h2>Add Video</h2>';
+            $form['#suffix']='';
+            $form['actions']['submit']['#submit'][] = 'Video_Submit';
+
+        }
+
+
+    }
+
+    if($form_id=='news_node_form'){
+
+        $x=arg();
+        if($x[2]=='edit'){
+            $form['#prefix']='<h2>Edit News</h2>';
+            $form['#suffix']='';
+            $form['actions']['submit']['#submit'][] = 'News_Submit';
+        }
+        else{
+
+            $form['#prefix']='<h2>Add News</h2>';
+            $form['#suffix']='';
+            $form['actions']['submit']['#submit'][] = 'News_Submit';
+
+        }
+
+
+    }
+
+    if($form_id=='faq_node_form'){
+
+        $x=arg();
+        if($x[2]=='edit'){
+            $form['#prefix']='<h2>Edit Faq</h2>';
+            $form['#suffix']='';
+            $form['actions']['submit']['#submit'][] = 'Faq_Submit';
+        }
+        else{
+
+            $form['#prefix']='<h2>Add Faq</h2>';
+            $form['#suffix']='';
+            $form['actions']['submit']['#submit'][] = 'Faq_Submit';
+
+        }
+
+
+
+
+    }
+
+    if($form_id == 'natural_post_settings_node_form'){
+
+		$form['actions']['submit']['#submit'][] = 'MYMODULE_submit_nPost';
+
+
+    }
+	
+	
+    if ($form_id == 'contactus_node_form') {
+        //$form['name']['#attributes']['placeholder'] = t( 'Username' );
+        //$form['name']['#description'] = t('');
+		
+		$form["title"]["#title"] = t('');
+		$form['title']['#attributes']['placeholder'] = t( 'First Name' );
+		$form["field_last_name"]['#title'] = t('');
+		$form["field_last_name"]['#attributes']['placeholder'] = t( 'Last Name' );
+		
+		
+    }
+
+
+	
+	
+	
+	
+}
+
+
+function custommodule_js_alter(&$javascript) {
+	$x=arg();
+	
+	//if($x[0]=='node' && $x[1]==2 )
+		//$javascript['misc/jquery.js']['data'] = drupal_get_path('module', 'custommodule') . '/js/jquery.js';
+}
+
+
+
+function Banner_Submit($form, &$form_state) {
+    //code here
+    $form_state['redirect'] = 'banner-listing'; //REDIRECTS TO STEP 2 after submit
+}
+
+function Faq_Submit($form, &$form_state) {
+    //code here
+    $form_state['redirect'] = 'faq-listing'; //REDIRECTS TO STEP 2 after submit
+}
+
+function job_Submit($form, &$form_state) {
+    //code here
+    $form_state['redirect'] = 'job-listing'; //REDIRECTS TO STEP 2 after submit
+}
+
+
+function Productbanner_submit($form, &$form_state) {
+    //code here
+    $form_state['redirect'] = 'product-banner-listing'; //REDIRECTS TO STEP 2 after submit
+}
+
+function News_Submit($form, &$form_state) {
+    //code here
+    $form_state['redirect'] = 'news-listing'; //REDIRECTS TO STEP 2 after submit
+}
+
+
+function Video_Submit($form, &$form_state) {
+    //code here
+    $form_state['redirect'] = 'video-listing'; //REDIRECTS TO STEP 2 after submit
+}
+
+
+function lists_session($key, $value = NULL) {
+    static $storage;
+    if ($value) {
+        $storage[$key] = $value ;
+        $_SESSION['lists'][$key] = $value ;   // I use 'lists' in case some other module uses 'type' in $_SESSION
+    }
+    else if (empty($storage[$key]) && isset($_SESSION['lists'][$key])) {
+        $storage[$key] = $_SESSION['lists'][$key];
+    }
+    return $storage[$key];
+}
+
+function MYMODULE_submit_nPost ($form, &$form_state) {
+    //code here
+    $form_state['redirect'] = 'node/214/edit'; //REDIRECTS TO STEP 2 after submit
+}
